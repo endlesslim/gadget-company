@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 가제트 컴퍼니 (Gadget Company)
 
-## Getting Started
+Next.js + TypeScript on Vercel. Boring tech first: App Router, Tailwind CSS, static-first rendering. No novelty tax until there's a durable reason.
 
-First, run the development server:
+## Local dev
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Opens at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Layer | Choice | Why |
+|---|---|---|
+| Framework | Next.js 16 App Router | Server Components, file-based routing, zero-config Vercel deploy |
+| Language | TypeScript | Catches mistakes at build time, not in prod |
+| Styling | Tailwind CSS v4 | Utility-first; no runtime overhead |
+| Deploy | Vercel | Git-integrated preview deploys out of the box |
 
-## Learn More
+## Deploy pipeline
 
-To learn more about Next.js, take a look at the following resources:
+- **Production**: push to `main` → Vercel auto-deploys to `https://default-ten-opal.vercel.app`
+- **Preview**: push to any branch → Vercel creates a unique preview URL per commit
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The Vercel project (`_default`) is linked to this repo via `.vercel/project.json`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment variables
 
-## Deploy on Vercel
+**Rule: never commit secrets. Use `vercel env` for anything shared.**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# Add a variable to all environments
+vercel env add MY_SECRET
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Add to a specific environment (production | preview | development)
+vercel env add DATABASE_URL production
+
+# Pull all env vars to a local .env.local (gitignored)
+vercel env pull .env.local
+
+# List all vars
+vercel env ls
+```
+
+Variables set via `vercel env` are available in CI, preview deploys, and production automatically — no manual copy-paste across environments.
+
+For local-only overrides, use `.env.local` (already in `.gitignore`). Never put secrets in `.env`, `next.config.ts`, or committed files.
+
+## Lint / typecheck
+
+```bash
+npm run lint      # ESLint
+npx tsc --noEmit  # TypeScript
+```
